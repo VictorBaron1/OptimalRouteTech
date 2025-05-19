@@ -1,34 +1,35 @@
-import java.util.Random;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        SchoolMap schoolMap = new SchoolMap();
-        Navigation navigation = new Navigation(schoolMap);
+        BrooklynTechNavigator nav = new BrooklynTechNavigator();
+        Scanner sc = new Scanner(System.in);
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter the starting room (e.g., East12F1): ");
-        String startRoomName = scanner.nextLine();
-        System.out.println("Enter the destination room (e.g., West24F5): ");
-        String destinationRoomName = scanner.nextLine();
+        System.out.println("Welcome to Brooklyn Tech Navigator!");
+        System.out.println("Sample valid rooms for this demo: W12F1, W14F1, W12F2, W14F2, E12F1, E14F1");
+        System.out.println("Enter your current room (e.g., 'W12F1'):");
+        String startId = sc.nextLine().trim().toUpperCase();
 
-        Random startRoom = schoolMap.rooms.get(startRoomName);
-        Room destinationRoom = schoolMap.rooms.get(destinationRoomName);
+        System.out.println("Enter your destination room (e.g., 'W14F2'):");
+        String endId = sc.nextLine().trim().toUpperCase();
 
-        if (startRoom == null || destinationRoom == null) {
-            System.out.println("Invalid room names.");
+        if (!nav.getNodes().containsKey(startId) || !nav.getNodes().containsKey(endId)) {
+            System.out.println("Invalid room(s). Please check your input.");
             return;
-        }
+}
 
-        List<Room> path = navigation.findShortestPath(startRoom, destinationRoom);
-        if (path.isEmpty()) {
-            System.out.println("No path found.");
+
+        List<Node> path = nav.shortestPath(startId, endId);
+        if (path == null) {
+            System.out.println("No path found between those rooms.");
         } else {
-            System.out.println("Shortest path:");
-            for (Room room : path) {
-                System.out.print(room + " -> ");
+            System.out.println("\nDIRECTIONS:");
+            for (Node n : path) {
+                System.out.println(" - " + n.label);
             }
-            System.out.println("\nTotal time: " + navigation.calculateTime(path) + " minutes.");
+            int totalTime = nav.calculateTime(path);
+            System.out.println("Estimated travel time: " + totalTime + " seconds.");
         }
     }
 }
