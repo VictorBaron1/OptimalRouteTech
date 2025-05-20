@@ -7,11 +7,11 @@ public class Main {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Welcome to Brooklyn Tech Navigator!");
-        System.out.println("Sample valid rooms for this demo: W12F1, W14F1, W12F2, W14F2, E12F1, E14F1");
-        System.out.println("Enter your current room (e.g., 'W12F1'):");
+        System.out.println("Sample valid rooms for this demo: 1W12, 1W14, 2W12, 2W14, 1E12, 1E14");
+        System.out.println("Enter your current room (e.g., '1W12'):");
         String startId = sc.nextLine().trim().toUpperCase();
 
-        System.out.println("Enter your destination room (e.g., 'W14F2'):");
+        System.out.println("Enter your destination room (e.g., '2W14'):");
         String endId = sc.nextLine().trim().toUpperCase();
 
         if (!nav.getNodes().containsKey(startId) || !nav.getNodes().containsKey(endId)) {

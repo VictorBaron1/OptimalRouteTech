@@ -1,9 +1,11 @@
+import java.util.*;
+
 public class BrooklynTechNavigator {
     private Map<String, Node> nodes = new HashMap<>();
 
     public Map<String, Node> getNodes() {
-    return nodes;
-}
+        return nodes;
+    }
 
     public BrooklynTechNavigator() {
         buildSchoolGraph();
@@ -12,16 +14,16 @@ public class BrooklynTechNavigator {
     // Build a simplified version of the school graph
     private void buildSchoolGraph() {
         // Add some example nodes (expand as needed)
-        addNode("W12F1", "West 12, Floor 1");
-        addNode("W14F1", "West 14, Floor 1");
-        addNode("W12F2", "West 12, Floor 2");
-        addNode("W14F2", "West 14, Floor 2");
-        addNode("E12F1", "East 12, Floor 1");
-        addNode("E14F1", "East 14, Floor 1");
-        addNode("StairW12F1", "Staircase West 12, Floor 1");
-        addNode("StairW12F2", "Staircase West 12, Floor 2");
-        addNode("StairE12F1", "Staircase East 12, Floor 1");
-        addNode("StairE12F2", "Staircase East 12, Floor 2");
+        addNode("1W12", "West 12, Floor 1");
+        addNode("1W14", "West 14, Floor 1");
+        addNode("2W12", "West 12, Floor 2");
+        addNode("2W14", "West 14, Floor 2");
+        addNode("1E12", "East 12, Floor 1");
+        addNode("1E14", "East 14, Floor 1");
+        addNode("StairNE", "Staircase North, Floor 1");
+        addNode("StairNW", "Staircase NorthWest, Floor 2");
+        addNode("StairSE", "Staircase SouthEast, Floor 1");
+        addNode("StairSW", "Staircase SouthWest, Floor 2");
 
         // Hallways (edges on same floor)
         addEdge("W12F1", "W14F1", 10);
@@ -36,11 +38,28 @@ public class BrooklynTechNavigator {
         addEdge("StairE12F1", "StairE12F2", 20);
         // Hallways on floor 2
         addEdge("W12F2", "W14F2", 10);
-        // Example: connect east and west via central hallway (add more as needed)
-        // addEdge("W14F1", "E14F1", 30);
-
-        // You would continue adding all rooms, intersections, staircases, and their connections here
     }
+    private void addRoomsForSides() {
+    for (int floor = 1; floor <= 6; floor++) {
+        // Add rooms for the West side (W) - Rooms 1 to 24
+        for (int roomNum = 1; roomNum <= 24; roomNum++) {
+            String nodeId = "F" + floor + "W" + roomNum;
+            addNode(nodeId, "West, Floor " + floor + ", Room " + roomNum);
+        }
+
+        // Add rooms for the East side (E) - Rooms 1 to 24
+        for (int roomNum = 1; roomNum <= 24; roomNum++) {
+            String nodeId = "F" + floor + "E" + roomNum;
+            addNode(nodeId, "East, Floor " + floor + ", Room " + roomNum);
+        }
+
+        // Add rooms for the center area (e.g., floors with room numbers 1 to 10)
+        for (int roomNum = 1; roomNum <= 10; roomNum++) {
+            String nodeId = "F" + floor + "C" + roomNum;  // Central room, e.g., "F1C1"
+            addNode(nodeId, "Center, Floor " + floor + ", Room " + roomNum);
+        }
+    }
+}
 
     private void addNode(String id, String label) {
         nodes.put(id, new Node(id, label));
@@ -117,9 +136,40 @@ public class BrooklynTechNavigator {
         String side = sideRoom.substring(0, 1);
         String roomNum = sideRoom.replaceAll("[^0-9]", "");
         String floorNum = floorStr.replaceAll("[^0-9]", "");
-        if (side.equals("W")) side = "W";
-        else if (side.equals("E")) side = "E";
-        else return null;
-        return side + roomNum + "F" + floorNum;
+        if (side.equals("W") || side.equals("E")) {
+            return side + roomNum + "F" + floorNum;
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        BrooklynTechNavigator nav = new BrooklynTechNavigator();
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Welcome to Brooklyn Tech Navigator!");
+        System.out.println("Sample valid rooms for this demo: W12F1, W14F1, W12F2, W14F2, E12F1, E14F1");
+        System.out.println("Enter your current room (e.g., 'W12F1'):");
+
+        String startId = sc.nextLine().trim().toUpperCase();
+
+        System.out.println("Enter your destination room (e.g., 'W14F2'):");
+        String endId = sc.nextLine().trim().toUpperCase();
+
+        if (!nav.getNodes().containsKey(startId) || !nav.getNodes().containsKey(endId)) {
+            System.out.println("Invalid room(s). Please check your input.");
+            return;
+        }
+
+        List<Node> path = nav.shortestPath(startId, endId);
+        if (path == null) {
+            System.out.println("No path found between those rooms.");
+        } else {
+            System.out.println("\nDIRECTIONS:");
+            for (Node n : path) {
+                System.out.println(" - " + n.label);
+            }
+            int totalTime = nav.calculateTime(path);
+            System.out.println("Estimated travel time: " + totalTime + " seconds.");
+        }
     }
 }
